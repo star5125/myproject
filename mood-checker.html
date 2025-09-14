@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 기분은 어떠세요?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: bold;
+        }
+
+        .mood-question {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        .mood-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .mood-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            border: none;
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .mood-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .mood-btn.happy {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+
+        .mood-btn.sad {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        .mood-btn.angry {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+        }
+
+        .mood-btn.excited {
+            background: linear-gradient(45deg, #ffa726, #ffcc02);
+        }
+
+        .mood-btn.tired {
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+        }
+
+        .mood-btn.calm {
+            background: linear-gradient(45deg, #a29bfe, #6c5ce7);
+        }
+
+        .response-area {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            min-height: 100px;
+            display: none;
+            border-left: 5px solid #667eea;
+        }
+
+        .response-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .emoji {
+            font-size: 2em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #636e72, #2d3436);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            color: white;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 오늘의 기분 체크 🌟</h1>
+        <p class="mood-question">오늘 기분이 어떠세요?</p>
+
+        <div class="mood-buttons">
+            <button class="mood-btn happy" onclick="showMoodResponse('happy')">😊 기뻐요</button>
+            <button class="mood-btn sad" onclick="showMoodResponse('sad')">😢 슬퍼요</button>
+            <button class="mood-btn angry" onclick="showMoodResponse('angry')">😠 화나요</button>
+            <button class="mood-btn excited" onclick="showMoodResponse('excited')">🤩 신나요</button>
+            <button class="mood-btn tired" onclick="showMoodResponse('tired')">😴 피곤해요</button>
+            <button class="mood-btn calm" onclick="showMoodResponse('calm')">😌 평온해요</button>
+        </div>
+
+        <div class="response-area" id="responseArea">
+            <div class="response-text" id="responseText"></div>
+            <button class="reset-btn" onclick="resetMood()">다시 선택하기</button>
+        </div>
+    </div>
+
+    <script>
+        const moodResponses = {
+            happy: {
+                emoji: "🎉",
+                messages: [
+                    "와! 정말 좋은 하루네요! 이 긍정적인 에너지를 계속 유지하세요! ✨",
+                    "기분 좋은 날이군요! 주변 사람들과 이 행복을 나눠보는 건 어떨까요? 😊",
+                    "멋진 기분이네요! 오늘 하루도 활기차게 보내세요! 🌈",
+                    "기쁜 마음이 전해져와요! 이런 날엔 새로운 도전을 해보는 것도 좋겠어요! 🚀"
+                ]
+            },
+            sad: {
+                emoji: "🤗",
+                messages: [
+                    "힘든 하루인가요? 괜찮아요, 이런 날도 있는 거죠. 내일은 더 좋은 날이 될 거예요! 💙",
+                    "슬픈 마음이 드시는군요. 좋아하는 음악을 듣거나 따뜻한 차 한 잔 어떠세요? ☕",
+                    "모든 감정은 소중해요. 지금의 마음도 받아들이고, 천천히 나아가보세요. 🌸",
+                    "슬플 때는 무리하지 마세요. 충분히 쉬고, 자신에게 다정하게 대해주세요. 🕊️"
+                ]
+            },
+            angry: {
+                emoji: "🔥",
+                messages: [
+                    "화가 날 때는 깊게 숨을 쉬어보세요. 10번 천천히... 마음이 조금 가라앉을 거예요. 🌊",
+                    "분노도 자연스러운 감정이에요. 산책이나 운동으로 에너지를 발산해보는 건 어떨까요? 🏃‍♂️",
+                    "화난 마음, 충분히 이해해요. 잠깐 시간을 두고 차분해진 후 생각해보세요. ⏰",
+                    "분노는 때로는 변화의 신호일 수도 있어요. 무엇이 화나게 했는지 생각해보세요. 💭"
+                ]
+            },
+            excited: {
+                emoji: "🎊",
+                messages: [
+                    "우와! 정말 신나는 일이 있나보네요! 이 에너지로 멋진 하루 만들어가세요! ⚡",
+                    "신나는 마음이 느껴져요! 오늘 계획했던 일들이 잘 풀릴 것 같아요! 🎯",
+                    "이런 설렘과 기대감, 정말 좋아요! 새로운 경험을 즐겨보세요! 🎈",
+                    "신나는 에너지가 전해져와요! 주변 사람들에게도 좋은 영향을 줄 거예요! ✨"
+                ]
+            },
+            tired: {
+                emoji: "💤",
+                messages: [
+                    "피곤하시군요. 충분한 휴식이 필요해 보여요. 일찍 주무시는 건 어떨까요? 🛏️",
+                    "몸과 마음이 지치셨나요? 따뜻한 목욕과 좋은 휴식을 취하세요. 🛁",
+                    "때로는 쉬는 것도 중요한 일이에요. 오늘은 자신을 위한 시간을 가져보세요. 🕯️",
+                    "피로는 몸의 신호예요. 무리하지 마시고, 편안한 휴식을 취하세요. 🌙"
+                ]
+            },
+            calm: {
+                emoji: "🧘‍♀️",
+                messages: [
+                    "평온한 마음이네요! 이런 여유로움을 유지하며 하루를 보내세요. 🍃",
+                    "차분한 기분이 좋아요. 이런 날엔 명상이나 독서를 해보는 건 어떨까요? 📚",
+                    "마음의 평화가 느껴져요. 자연을 감상하며 산책하기 좋은 날이네요. 🌳",
+                    "고요한 마음, 참 아름다워요. 이 평온함 속에서 내면의 소리를 들어보세요. 🎋"
+                ]
+            }
+        };
+
+        function showMoodResponse(mood) {
+            const response = moodResponses[mood];
+            const randomMessage = response.messages[Math.floor(Math.random() * response.messages.length)];
+
+            document.getElementById('responseText').innerHTML =
+                `<span class="emoji">${response.emoji}</span>${randomMessage}`;
+
+            document.querySelector('.mood-buttons').style.display = 'none';
+            document.querySelector('.mood-question').style.display = 'none';
+            document.getElementById('responseArea').style.display = 'block';
+
+            document.getElementById('responseArea').scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+
+        function resetMood() {
+            document.querySelector('.mood-buttons').style.display = 'grid';
+            document.querySelector('.mood-question').style.display = 'block';
+            document.getElementById('responseArea').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

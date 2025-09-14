@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교사 MBTI 검사 - 내 안의 교육자 발견하기</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        .question {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+        .question h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .option {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        .option input[type="radio"] {
+            margin-right: 10px;
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            transition: transform 0.3s ease;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        .result {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        .result h2 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        .teacher-type {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .characteristics {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .characteristics h4 {
+            color: #fff;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+        .characteristics ul {
+            list-style: none;
+            padding: 0;
+        }
+        .characteristics li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .characteristics li:before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+        }
+        .restart-btn {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 10px 30px;
+            border-radius: 20px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍎 교사 MBTI 검사</h1>
+            <p>당신은 어떤 타입의 교육자인가요? 재미있는 교실 상황으로 알아보세요!</p>
+        </div>
+
+        <form id="mbtiForm">
+            <div class="question">
+                <h3>📚 새 학기 첫날, 학생들에게 자기소개를 시킬 때 당신의 방식은?</h3>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q1" value="E">
+                        모든 학생이 앞에 나와서 큰 소리로 자기소개하게 한다
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="I">
+                        짝과 서로 소개한 후 짝을 소개하는 방식으로 진행한다
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>🎯 수업 계획을 세울 때 당신의 스타일은?</h3>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q2" value="S">
+                        교육과정과 교과서를 꼼꼼히 분석해서 체계적으로 계획한다
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="N">
+                        학생들이 흥미로워할 만한 창의적인 활동을 먼저 떠올린다
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>😢 학생이 울면서 "수학이 너무 어려워요"라고 할 때?</h3>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q3" value="F">
+                        "괜찮아, 선생님이 도와줄게. 천천히 해보자" 하며 위로한다
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="T">
+                        "어떤 부분이 어려운지 구체적으로 말해보자" 하며 문제를 파악한다
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>📋 학급 운영을 할 때 당신의 방식은?</h3>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q4" value="J">
+                        명확한 규칙과 일과표를 만들어 체계적으로 운영한다
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="P">
+                        상황에 따라 유연하게 조정하며 학생들 의견을 반영한다
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>🎉 학급 행사를 준비할 때 당신은?</h3>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q5" value="E">
+                        모든 학생이 참여할 수 있는 대규모 이벤트를 기획한다
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="I">
+                        소그룹별로 의미있는 활동을 할 수 있도록 계획한다
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>📖 수업 중 예상치 못한 질문을 받았을 때?</h3>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q6" value="N">
+                        "좋은 질문이네! 함께 상상해보자" 하며 확장해서 다룬다
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="S">
+                        정확한 답을 찾아서 다음 시간에 알려주겠다고 한다
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>💭 학생 상담을 할 때 당신의 접근법은?</h3>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q7" value="F">
+                        학생의 마음을 공감하고 감정을 충분히 들어준다
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="T">
+                        문제 상황을 분석하고 구체적인 해결책을 제시한다
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>⏰ 수업 시간 관리에 대한 당신의 생각은?</h3>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q8" value="J">
+                        계획한 진도를 정확히 맞추는 것이 중요하다
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="P">
+                        학생들의 이해도에 따라 진도를 조절하는 것이 중요하다
+                    </label>
+                </div>
+            </div>
+
+            <button type="button" class="submit-btn" onclick="calculateResult()">🔍 내 교사 타입 알아보기</button>
+        </form>
+
+        <div id="result" class="result">
+            <h2>당신의 교사 타입은...</h2>
+            <div id="resultCard" class="result-card">
+                <div id="teacherType" class="teacher-type"></div>
+                <div id="typeDescription"></div>
+                <div id="characteristics" class="characteristics"></div>
+            </div>
+            <button class="restart-btn" onclick="restartTest()">다시 검사하기</button>
+        </div>
+    </div>
+
+    <script>
+        // 옵션 선택 효과
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                // 같은 질문의 다른 옵션들에서 selected 클래스 제거
+                const questionOptions = this.closest('.question').querySelectorAll('.option');
+                questionOptions.forEach(opt => opt.classList.remove('selected'));
+
+                // 현재 옵션에 selected 클래스 추가
+                this.classList.add('selected');
+
+                // 라디오 버튼 체크
+                this.querySelector('input[type="radio"]').checked = true;
+            });
+        });
+
+        function calculateResult() {
+            const form = document.getElementById('mbtiForm');
+            const formData = new FormData(form);
+
+            // 모든 질문이 답변되었는지 확인
+            if (formData.getAll('q1').length === 0 || formData.getAll('q2').length === 0 ||
+                formData.getAll('q3').length === 0 || formData.getAll('q4').length === 0 ||
+                formData.getAll('q5').length === 0 || formData.getAll('q6').length === 0 ||
+                formData.getAll('q7').length === 0 || formData.getAll('q8').length === 0) {
+                alert('모든 질문에 답변해주세요!');
+                return;
+            }
+
+            // MBTI 점수 계산
+            let E = 0, I = 0, S = 0, N = 0, T = 0, F = 0, J = 0, P = 0;
+
+            for (let [key, value] of formData.entries()) {
+                switch(value) {
+                    case 'E': E++; break;
+                    case 'I': I++; break;
+                    case 'S': S++; break;
+                    case 'N': N++; break;
+                    case 'T': T++; break;
+                    case 'F': F++; break;
+                    case 'J': J++; break;
+                    case 'P': P++; break;
+                }
+            }
+
+            // MBTI 타입 결정
+            const type = (E >= I ? 'E' : 'I') +
+                        (S >= N ? 'S' : 'N') +
+                        (T >= F ? 'T' : 'F') +
+                        (J >= P ? 'J' : 'P');
+
+            displayResult(type);
+        }
+
+        function displayResult(type) {
+            const teacherTypes = {
+                'ESTJ': {
+                    name: '엄마 같은 학급 관리자',
+                    emoji: '👩‍🏫',
+                    description: '체계적이고 책임감 있는 당신! 학급을 효율적으로 운영하는 타고난 리더입니다.',
+                    characteristics: [
+                        '규칙과 질서를 중시하는 체계적인 수업 운영',
+                        '학생들의 학습 목표 달성을 위한 명확한 계획 수립',
+                        '공정하고 일관된 평가와 피드백 제공',
+                        '학급 분위기를 활기차게 만드는 카리스마',
+                        '학부모와의 소통에서 신뢰받는 선생님'
+                    ]
+                },
+                'ESFJ': {
+                    name: '따뜻한 마음의 힐링 교사',
+                    emoji: '🤗',
+                    description: '학생 한 명 한 명을 소중히 여기는 마음 따뜻한 교육자입니다.',
+                    characteristics: [
+                        '학생들의 감정과 필요를 세심하게 파악',
+                        '화목한 학급 분위기 조성의 달인',
+                        '개별 학생에 맞는 맞춤형 지도',
+                        '학급 행사와 특별 활동 기획의 천재',
+                        '학생들이 가장 그리워하는 선생님'
+                    ]
+                },
+                'ENTJ': {
+                    name: '비전을 제시하는 혁신 리더',
+                    emoji: '🚀',
+                    description: '교육계의 CEO! 큰 그림을 그리며 학생들을 이끄는 카리스마 넘치는 교사입니다.',
+                    characteristics: [
+                        '장기적인 교육 목표와 비전 제시',
+                        '학생들의 잠재력을 최대한 끌어내는 동기부여',
+                        '혁신적인 교육 방법 도입과 실행',
+                        '학급을 하나의 팀으로 만드는 리더십',
+                        '교육과정 개선과 발전에 기여하는 선구자'
+                    ]
+                },
+                'ENFJ': {
+                    name: '영감을 주는 멘토 교사',
+                    emoji: '✨',
+                    description: '학생들의 꿈과 가능성을 믿어주는 진정한 멘토입니다.',
+                    characteristics: [
+                        '학생들의 숨겨진 재능과 가능성 발견',
+                        '개인의 성장과 발전을 위한 맞춤 지도',
+                        '긍정적인 에너지로 학급 분위기 UP',
+                        '학생들의 진로와 꿈을 함께 고민하는 조언자',
+                        '졸업 후에도 계속 찾아오는 제자들의 인생 선생님'
+                    ]
+                },
+                'ESTP': {
+                    name: '활력 넘치는 액션 교사',
+                    emoji: '🎪',
+                    description: '교실이 놀이터가 되는 마법! 역동적이고 재미있는 수업의 마스터입니다.',
+                    characteristics: [
+                        '몸으로 체험하는 생생한 수업 진행',
+                        '순발력으로 위기 상황을 기회로 전환',
+                        '학생들과의 스킨십과 소통이 자연스러운 친근함',
+                        '교실 밖 활동과 현장 학습의 전문가',
+                        '에너지 넘치는 수업으로 잠자는 학생이 없는 교실'
+                    ]
+                },
+                'ESFP': {
+                    name: '학급의 햇살 같은 엔터테이너',
+                    emoji: '🌞',
+                    description: '매일이 축제인 교실! 학생들에게 즐거움과 행복을 선사하는 교사입니다.',
+                    characteristics: [
+                        '즐겁고 유쾌한 분위기의 수업 운영',
+                        '학생들의 개성과 특색을 존중하고 격려',
+                        '창의적이고 다양한 활동으로 흥미 유발',
+                        '학생들과의 진심 어린 소통과 공감',
+                        '학교생활이 즐거워지는 마법을 부리는 선생님'
+                    ]
+                },
+                'ENTP': {
+                    name: '아이디어 뱅크 크리에이터',
+                    emoji: '💡',
+                    description: '매일 새로운 수업으로 학생들을 놀라게 하는 창의력의 화신입니다.',
+                    characteristics: [
+                        '기발하고 독창적인 수업 방법 개발',
+                        '학생들의 호기심과 탐구심 자극',
+                        '토론과 브레인스토밍을 통한 사고력 개발',
+                        '교육과정을 창의적으로 재해석하는 능력',
+                        '예측 불가능한 재미로 가득한 교실 운영'
+                    ]
+                },
+                'ENFP': {
+                    name: '꿈을 키우는 동기부여 마스터',
+                    emoji: '🌈',
+                    description: '학생들의 가능성을 믿고 꿈을 향해 날아오르게 하는 희망의 교사입니다.',
+                    characteristics: [
+                        '학생 개개인의 꿈과 목표를 적극 지원',
+                        '긍정적 사고와 자신감 심어주기',
+                        '다양한 관점에서 생각하도록 유도',
+                        '창의적 표현 활동과 프로젝트 수업 선호',
+                        '학생들이 스스로 성장할 수 있도록 돕는 조력자'
+                    ]
+                },
+                'ISTJ': {
+                    name: '신뢰받는 전통 수호자',
+                    emoji: '📚',
+                    description: '꼼꼼하고 성실한 당신! 기본기가 탄탄한 교육의 기둥 같은 존재입니다.',
+                    characteristics: [
+                        '체계적이고 단계적인 학습 지도',
+                        '기본기와 기초 실력 다지기 중시',
+                        '성실하고 책임감 있는 수업 준비',
+                        '학생들의 학습 진도를 꼼꼼히 관리',
+                        '학부모들이 가장 신뢰하는 든든한 선생님'
+                    ]
+                },
+                'ISFJ': {
+                    name: '조용한 케어테이커',
+                    emoji: '🕊️',
+                    description: '묵묵히 학생들을 돌보는 따뜻한 마음의 소유자입니다.',
+                    characteristics: [
+                        '조용하지만 깊이 있는 개별 상담',
+                        '소외받는 학생이 없도록 세심한 배려',
+                        '안정적이고 평화로운 학급 분위기 조성',
+                        '학생들의 작은 변화도 놓치지 않는 관찰력',
+                        '진심 어린 관심으로 학생들의 마음을 치유'
+                    ]
+                },
+                'INTJ': {
+                    name: '교육 설계의 마스터마인드',
+                    emoji: '🎯',
+                    description: '장기적인 관점에서 교육을 바라보는 전략적 사고의 달인입니다.',
+                    characteristics: [
+                        '체계적이고 논리적인 교육과정 설계',
+                        '학생들의 잠재력을 개발하는 장기 플랜',
+                        '독립적 사고력과 문제해결력 중시',
+                        '효율적인 학습 방법 연구와 적용',
+                        '교육의 본질과 목적을 깊이 고민하는 철학자'
+                    ]
+                },
+                'INFJ': {
+                    name: '학생들의 마음을 읽는 통찰자',
+                    emoji: '🔮',
+                    description: '학생들의 내면을 이해하고 성장을 도모하는 영혼의 가이드입니다.',
+                    characteristics: [
+                        '학생들의 감정과 내면 세계에 대한 깊은 이해',
+                        '개인의 성장과 자아실현을 돕는 맞춤 지도',
+                        '조용하지만 깊이 있는 영향력 발휘',
+                        '학생들의 가능성을 믿고 격려하는 멘토',
+                        '진정한 교육의 의미를 실천하는 이상주의자'
+                    ]
+                },
+                'ISTP': {
+                    name: '문제해결의 장인',
+                    emoji: '🔧',
+                    description: '실용적이고 논리적인 접근으로 교육 문제를 해결하는 전문가입니다.',
+                    characteristics: [
+                        '실용적이고 현실적인 교육 방법 추구',
+                        '문제 상황에서 침착하고 논리적 대응',
+                        '학생들의 실무 능력 개발에 집중',
+                        '간결하고 효과적인 설명으로 이해도 증진',
+                        '유연한 사고로 다양한 교육 방법 시도'
+                    ]
+                },
+                'ISFP': {
+                    name: '예술적 감성의 교육 아티스트',
+                    emoji: '🎨',
+                    description: '학생들의 개성과 창의성을 꽃피우는 예술 감성의 교사입니다.',
+                    characteristics: [
+                        '학생들의 개성과 다양성을 존중하고 격려',
+                        '창의적 표현 활동과 예술 교육 중시',
+                        '따뜻하고 수용적인 학급 분위기 조성',
+                        '학생들과의 진정성 있는 관계 형성',
+                        '각자의 속도에 맞는 개별화된 교육 제공'
+                    ]
+                },
+                'INTP': {
+                    name: '지식 탐구의 연구자',
+                    emoji: '🧠',
+                    description: '깊이 있는 사고와 탐구를 통해 학생들의 지적 호기심을 자극하는 교사입니다.',
+                    characteristics: [
+                        '논리적 사고력과 분석 능력 개발에 집중',
+                        '학생들의 지적 호기심과 탐구심 자극',
+                        '독창적이고 혁신적인 교육 방법 연구',
+                        '깊이 있는 토론과 질문을 통한 사고 확장',
+                        '지식의 본질과 원리를 이해하도록 지도'
+                    ]
+                },
+                'INFP': {
+                    name: '꿈과 이상을 심는 가드너',
+                    emoji: '🌱',
+                    description: '학생들의 내면의 씨앗을 정성스럽게 키워주는 마음의 정원사입니다.',
+                    characteristics: [
+                        '학생들의 내재적 동기와 가치관 존중',
+                        '개별 학생의 꿈과 이상을 지지하고 격려',
+                        '창의적이고 의미 있는 학습 경험 제공',
+                        '진정성 있는 소통으로 신뢰 관계 구축',
+                        '교육을 통한 더 나은 세상 만들기에 헌신'
+                    ]
+                }
+            };
+
+            const result = teacherTypes[type];
+            document.getElementById('teacherType').innerHTML = `${result.emoji} ${result.name}`;
+            document.getElementById('typeDescription').innerHTML = result.description;
+
+            let characteristicsHTML = '<h4>🌟 당신의 교사 특성</h4><ul>';
+            result.characteristics.forEach(char => {
+                characteristicsHTML += `<li>${char}</li>`;
+            });
+            characteristicsHTML += '</ul>';
+
+            document.getElementById('characteristics').innerHTML = characteristicsHTML;
+
+            // 결과 표시
+            document.getElementById('mbtiForm').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+        }
+
+        function restartTest() {
+            document.getElementById('mbtiForm').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('mbtiForm').reset();
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+            });
+        }
+    </script>
+</body>
+</html>

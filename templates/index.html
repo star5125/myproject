@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF 파일 병합기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        .upload-section {
+            background: #f8f9ff;
+            border: 2px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: #5a67d8;
+            background: #f0f4ff;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .selected-files {
+            margin-top: 20px;
+            text-align: left;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .selected-files h4 {
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .file-item {
+            background: #f7fafc;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+        }
+
+        .file-item::before {
+            content: "📄";
+            margin-right: 8px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(72, 187, 120, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .info-box h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .info-box ul {
+            color: #4a5568;
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+
+        .info-box ul li {
+            margin-bottom: 5px;
+        }
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .drag-over {
+            border-color: #5a67d8 !important;
+            background: #f0f4ff !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 PDF 병합기</h1>
+        <p class="subtitle">여러 개의 이미지와 PDF 파일을 하나의 PDF로 합쳐보세요</p>
+
+        <div class="info-box">
+            <h3>📌 사용 방법:</h3>
+            <ul>
+                <li>이미지 파일 (JPG, PNG)과 PDF 파일을 선택하세요</li>
+                <li>선택한 파일 순서대로 PDF에 병합됩니다</li>
+                <li>최대 파일 크기: 50MB</li>
+                <li>처리 완료 후 자동으로 다운로드됩니다</li>
+            </ul>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form id="uploadForm" action="/merge" method="post" enctype="multipart/form-data">
+            <div class="upload-section" id="uploadSection">
+                <div class="upload-icon">📤</div>
+                <div class="file-input-wrapper">
+                    <input type="file" id="fileInput" name="files[]" multiple accept=".pdf,.png,.jpg,.jpeg">
+                    <label for="fileInput" class="file-input-label">
+                        파일 선택하기
+                    </label>
+                </div>
+                <p style="margin-top: 15px; color: #666; font-size: 0.9em;">
+                    또는 파일을 여기에 드래그하여 놓으세요
+                </p>
+
+                <div id="selectedFiles" class="selected-files" style="display: none;">
+                    <h4>선택된 파일:</h4>
+                    <div id="fileList"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                PDF로 변환 및 병합
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>파일을 처리하고 있습니다. 잠시만 기다려주세요...</p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const fileList = document.getElementById('fileList');
+        const submitBtn = document.getElementById('submitBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const loading = document.getElementById('loading');
+        const uploadSection = document.getElementById('uploadSection');
+
+        fileInput.addEventListener('change', handleFileSelect);
+        uploadForm.addEventListener('submit', handleSubmit);
+
+        // 드래그 앤 드롭 기능
+        uploadSection.addEventListener('dragover', handleDragOver);
+        uploadSection.addEventListener('dragleave', handleDragLeave);
+        uploadSection.addEventListener('drop', handleDrop);
+
+        function handleFileSelect(e) {
+            displaySelectedFiles(e.target.files);
+        }
+
+        function displaySelectedFiles(files) {
+            if (files.length > 0) {
+                selectedFiles.style.display = 'block';
+                fileList.innerHTML = '';
+
+                Array.from(files).forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+
+                    let icon = '📄';
+                    if (file.type.startsWith('image/')) {
+                        icon = '🖼️';
+                    } else if (file.type === 'application/pdf') {
+                        icon = '📕';
+                    }
+
+                    fileItem.innerHTML = `${icon} ${file.name} (${formatFileSize(file.size)})`;
+                    fileList.appendChild(fileItem);
+                });
+
+                submitBtn.disabled = false;
+            } else {
+                selectedFiles.style.display = 'none';
+                submitBtn.disabled = true;
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function handleSubmit(e) {
+            if (fileInput.files.length === 0) {
+                e.preventDefault();
+                alert('파일을 선택해주세요.');
+                return;
+            }
+
+            submitBtn.style.display = 'none';
+            loading.style.display = 'block';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadSection.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            fileInput.files = files;
+            displaySelectedFiles(files);
+        }
+    </script>
+</body>
+</html>

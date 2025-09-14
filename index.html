@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시설 예약 시스템</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>시설 예약 시스템</h1>
+            <div id="auth-section">
+                <button id="login-btn">로그인</button>
+                <button id="register-btn">회원가입</button>
+                <button id="logout-btn" style="display: none;">로그아웃</button>
+                <button id="my-reservations-btn" style="display: none;">내 예약</button>
+                <span id="user-info" style="display: none;"></span>
+            </div>
+        </header>
+
+        <main>
+            <div id="login-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>로그인</h2>
+                    <form id="login-form">
+                        <input type="text" id="username" placeholder="사용자명" required>
+                        <input type="password" id="password" placeholder="비밀번호" required>
+                        <button type="submit">로그인</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="register-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-register">&times;</span>
+                    <h2>회원가입</h2>
+                    <form id="register-form">
+                        <input type="text" id="reg-username" placeholder="사용자명" required>
+                        <input type="text" id="reg-name" placeholder="실명" required>
+                        <input type="password" id="reg-password" placeholder="비밀번호" required>
+                        <input type="password" id="reg-password-confirm" placeholder="비밀번호 확인" required>
+                        <button type="submit">회원가입</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="reservation-detail-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close-detail">&times;</span>
+                    <h2>예약 상세 정보</h2>
+                    <form id="reservation-detail-form">
+                        <div class="reservation-summary">
+                            <p><strong>시설:</strong> <span id="detail-facility"></span></p>
+                            <p><strong>날짜:</strong> <span id="detail-date"></span></p>
+                            <p><strong>시간:</strong> <span id="detail-time"></span></p>
+                        </div>
+                        <textarea id="reservation-description" placeholder="예약 목적이나 내용을 작성해주세요..." rows="4"></textarea>
+                        <button type="submit">예약 확정</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="my-reservations-modal" class="modal" style="display: none;">
+                <div class="modal-content large">
+                    <span class="close-my-reservations">&times;</span>
+                    <h2>내 예약 현황</h2>
+                    <div id="user-reservations-list"></div>
+                </div>
+            </div>
+
+            <div id="main-content">
+                <div id="facility-selection">
+                    <h2>시설 선택</h2>
+                    <div class="facility-buttons">
+                        <button class="facility-btn" data-facility="library">도서관</button>
+                        <button class="facility-btn" data-facility="multimedia">멀티미디어실</button>
+                        <button class="facility-btn" data-facility="club1">동아리실1</button>
+                        <button class="facility-btn" data-facility="club2">동아리실2</button>
+                    </div>
+                </div>
+
+                <div id="reservation-section" style="display: none;">
+                    <h2 id="facility-name"></h2>
+                    <div id="calendar-container">
+                        <div id="date-selector">
+                            <input type="date" id="reservation-date">
+                        </div>
+                        <div id="time-slots"></div>
+                    </div>
+                    <button id="back-btn">뒤로가기</button>
+                </div>
+
+                <div id="admin-panel" style="display: none;">
+                    <h2>관리자 패널</h2>
+                    <div class="admin-tabs">
+                        <button class="tab-btn active" data-tab="reservations">예약 현황</button>
+                        <button class="tab-btn" data-tab="users">사용자 관리</button>
+                    </div>
+                    <div id="admin-content"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숫자 10 디자인</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 50px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 400px;
+            height: 300px;
+        }
+
+        /* 숫자 1 */
+        .number-1 {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            width: 80px;
+            height: 200px;
+            background-color: transparent;
+            border: 3px solid #333;
+            border-radius: 0;
+        }
+
+        .number-1::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -30px;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #333;
+            border-bottom: none;
+            border-right: none;
+            transform: rotate(45deg);
+            border-radius: 0;
+        }
+
+        .number-1::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: -20px;
+            width: 120px;
+            height: 3px;
+            background-color: #333;
+        }
+
+        /* 숫자 0 */
+        .number-0 {
+            position: absolute;
+            right: 50px;
+            top: 50px;
+            width: 120px;
+            height: 200px;
+            border: 3px solid #333;
+            border-radius: 60px;
+            background-color: transparent;
+        }
+
+        /* 곡선 연결선 - 이미지의 곡선과 유사하게 */
+        .curved-line {
+            position: absolute;
+            left: 130px;
+            top: 80px;
+            width: 140px;
+            height: 140px;
+            border: 3px solid #333;
+            border-radius: 50%;
+            border-top: none;
+            border-right: none;
+            transform: rotate(45deg);
+            background-color: transparent;
+        }
+
+        /* 추가 장식 곡선 */
+        .decoration-curve {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            width: 200px;
+            height: 100px;
+            border: 3px solid #333;
+            border-bottom: none;
+            border-radius: 100px 100px 0 0;
+            background-color: transparent;
+        }
+
+        /* 하단 곡선 */
+        .bottom-curve {
+            position: absolute;
+            left: 100px;
+            bottom: 20px;
+            width: 250px;
+            height: 80px;
+            border: 3px solid #333;
+            border-top: none;
+            border-radius: 0 0 125px 125px;
+            background-color: transparent;
+        }
+
+        /* 숫자 10 텍스트 (백업용) */
+        .number-text {
+            position: absolute;
+            top: 260px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+
+        /* 애니메이션 효과 */
+        .animated {
+            animation: drawLine 2s ease-in-out;
+        }
+
+        @keyframes drawLine {
+            from {
+                opacity: 0;
+                stroke-dasharray: 1000;
+                stroke-dashoffset: 1000;
+            }
+            to {
+                opacity: 1;
+                stroke-dasharray: 1000;
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* 호버 효과 */
+        .container:hover .number-1,
+        .container:hover .number-0,
+        .container:hover .curved-line,
+        .container:hover .decoration-curve,
+        .container:hover .bottom-curve {
+            border-color: #007bff;
+            transition: border-color 0.3s ease;
+        }
+
+        /* SVG 버전 (더 정확한 곡선) */
+        .svg-version {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .svg-path {
+            fill: none;
+            stroke: #333;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- CSS 버전 -->
+        <div class="number-1 animated"></div>
+        <div class="number-0 animated"></div>
+        <div class="curved-line animated"></div>
+        <div class="decoration-curve animated"></div>
+        <div class="bottom-curve animated"></div>
+        <div class="number-text">10</div>
+
+        <!-- SVG 버전 (더 정밀한 곡선) -->
+        <svg class="svg-version" viewBox="0 0 400 300">
+            <!-- 이미지와 유사한 곡선 패스 -->
+            <path class="svg-path" d="M 50 30 L 350 30 M 50 30 Q 30 80 80 120 Q 130 160 180 140 Q 230 120 280 160 Q 330 200 350 180 Q 370 160 350 200 Q 330 240 280 220 Q 230 200 180 240 Q 130 280 200 270 Q 270 260 350 270" />
+
+            <!-- 숫자 1을 위한 패스 -->
+            <path class="svg-path" d="M 80 80 L 80 220 M 60 100 L 80 80 M 60 220 L 100 220" />
+
+            <!-- 숫자 0을 위한 패스 -->
+            <ellipse class="svg-path" cx="300" cy="150" rx="40" ry="70" />
+        </svg>
+    </div>
+
+    <script>
+        // 페이지 로드 시 애니메이션 실행
+        window.addEventListener('load', function() {
+            const elements = document.querySelectorAll('.animated');
+            elements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.animationDelay = `${index * 0.2}s`;
+                }, index * 200);
+            });
+        });
+
+        // 클릭 시 색상 변경
+        document.querySelector('.container').addEventListener('click', function() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+            document.querySelectorAll('.number-1, .number-0, .curved-line, .decoration-curve, .bottom-curve').forEach(el => {
+                el.style.borderColor = randomColor;
+            });
+
+            document.querySelectorAll('.svg-path').forEach(el => {
+                el.style.stroke = randomColor;
+            });
+
+            document.querySelector('.number-text').style.color = randomColor;
+        });
+    </script>
+</body>
+</html>
