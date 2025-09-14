@@ -2,10 +2,7 @@
   "name": "facility-reservation-system",
   "version": "1.0.0",
   "description": "시설 예약 시스템",
-  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
     "build": "echo 'No build step required'",
     "vercel-build": "echo 'Building for Vercel'"
   },
