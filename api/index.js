@@ -36,8 +36,32 @@ module.exports = async (req, res) => {
         return res.status(200).end();
     }
 
+    // Body 파싱 (Vercel에서는 수동으로 처리 필요)
+    if (req.method === 'POST' || req.method === 'PUT') {
+        if (!req.body && req.body !== '') {
+            let body = '';
+            req.on('data', chunk => {
+                body += chunk.toString();
+            });
+            await new Promise(resolve => {
+                req.on('end', () => {
+                    try {
+                        req.body = body ? JSON.parse(body) : {};
+                    } catch (e) {
+                        req.body = {};
+                    }
+                    resolve();
+                });
+            });
+        }
+    }
+
     const { method, url } = req;
-    const urlPath = url.replace('/api', '');
+    const urlPath = url.replace('/api', '').split('?')[0]; // 쿼리 파라미터 제거
+
+    console.log('Request method:', method);
+    console.log('Original URL:', url);
+    console.log('Parsed URL path:', urlPath);
 
     try {
         // 로그인 API
@@ -85,27 +109,34 @@ module.exports = async (req, res) => {
 
         // 예약 조회 API
         if (method === 'GET' && urlPath === '/reservations') {
-            const query = new URL(req.url, 'http://localhost').searchParams;
-            const facility = query.get('facility');
-            const date = query.get('date');
-            const userOnly = query.get('userOnly');
-            const username = query.get('username');
+            try {
+                const query = new URL(req.url, `http://${req.headers.host || 'localhost'}`).searchParams;
+                const facility = query.get('facility');
+                const date = query.get('date');
+                const userOnly = query.get('userOnly');
+                const username = query.get('username');
 
-            let filteredReservations = global.reservations;
+                let filteredReservations = global.reservations || [];
 
-            if (facility) {
-                filteredReservations = filteredReservations.filter(r => r.facility === facility);
+                if (facility) {
+                    filteredReservations = filteredReservations.filter(r => r.facility === facility);
+                }
+
+                if (date) {
+                    filteredReservations = filteredReservations.filter(r => r.date === date);
+                }
+
+                if (userOnly === 'true' && username) {
+                    filteredReservations = filteredReservations.filter(r => r.user === username);
+                }
+
+                res.status(200).json(filteredReservations);
+                return;
+            } catch (error) {
+                console.error('Reservations API error:', error);
+                res.status(500).json({ success: false, message: 'Failed to load reservations', error: error.message });
+                return;
             }
-
-            if (date) {
-                filteredReservations = filteredReservations.filter(r => r.date === date);
-            }
-
-            if (userOnly === 'true' && username) {
-                filteredReservations = filteredReservations.filter(r => r.user === username);
-            }
-
-            return res.json(filteredReservations);
         }
 
         // 예약 생성 API
@@ -211,7 +242,8 @@ module.exports = async (req, res) => {
         }
 
         // 404 처리
-        return res.status(404).json({ success: false, message: 'API endpoint not found' });
+        console.log(`404 - No matching endpoint found for ${method} ${urlPath}`);
+        return res.status(404).json({ success: false, message: `API endpoint not found: ${method} ${urlPath}` });
 
     } catch (error) {
         console.error('API Error:', error);

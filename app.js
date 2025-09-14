@@ -8,9 +8,16 @@ class ReservationSystem {
         this.selectedSlots = [];
         this.currentFacility = null;
         this.currentDate = null;
-        this.baseURL = window.location.hostname === 'localhost'
-            ? 'http://localhost:3001/api'
-            : '/api';
+        // API URL 설정 - 상대 경로로 현재 도메인의 /api를 사용
+        if (window.location.hostname === 'localhost') {
+            this.baseURL = 'http://localhost:3001/api';
+        } else {
+            this.baseURL = window.location.origin + '/api';
+        }
+
+        console.log('Current hostname:', window.location.hostname);
+        console.log('Current origin:', window.location.origin);
+        console.log('Base URL:', this.baseURL);
 
         this.init();
     }
@@ -294,18 +301,32 @@ class ReservationSystem {
 
         this.currentDate = date;
         const timeSlotsContainer = document.getElementById('time-slots');
-        timeSlotsContainer.innerHTML = '';
+        timeSlotsContainer.innerHTML = '<div>예약 정보를 불러오는 중...</div>';
 
         try {
-            const response = await fetch(`${this.baseURL}/reservations?facility=${this.currentFacility}&date=${date}`);
+            const url = `${this.baseURL}/reservations?facility=${this.currentFacility}&date=${date}`;
+            console.log('Loading reservations from:', url);
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
             const dayReservations = await response.json();
+            console.log('Loaded reservations:', dayReservations);
+
+            // API 응답이 배열인지 확인하고 배열로 변환
+            const reservationsArray = Array.isArray(dayReservations) ? dayReservations : [];
+
+            timeSlotsContainer.innerHTML = '';
 
             this.timeSlots.forEach(slot => {
                 const slotElement = document.createElement('div');
                 slotElement.className = 'time-slot';
                 slotElement.dataset.slot = slot;
 
-                const reservation = this.findSlotReservation(dayReservations, slot);
+                const reservation = this.findSlotReservation(reservationsArray, slot);
                 const isSelected = this.selectedSlots.includes(slot);
 
                 if (reservation) {
@@ -337,12 +358,17 @@ class ReservationSystem {
             }
         } catch (error) {
             console.error('예약 정보 로드 실패:', error);
-            this.showMessage('예약 정보를 불러오는데 실패했습니다.', 'error');
+            timeSlotsContainer.innerHTML = '<div>예약 정보를 불러올 수 없습니다. 새로고침 후 다시 시도해주세요.</div>';
+            this.showMessage(`예약 정보를 불러오는데 실패했습니다: ${error.message}`, 'error');
         }
     }
 
     findSlotReservation(reservations, slot) {
-        return reservations.find(r => r.timeSlots.includes(slot));
+        if (!Array.isArray(reservations)) {
+            console.error('Reservations is not an array:', reservations);
+            return null;
+        }
+        return reservations.find(r => r && r.timeSlots && r.timeSlots.includes(slot));
     }
 
     toggleSlotSelection(slot, element) {
