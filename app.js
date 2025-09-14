@@ -333,10 +333,10 @@ class ReservationSystem {
                     slotElement.classList.add('reserved');
                     slotElement.innerHTML = `
                         <div class="time">${slot}</div>
-                        <div class="reserver">${reservation.userName}</div>
+                        <div class="reserver">${reservation.user_name}</div>
                     `;
 
-                    let tooltip = `예약자: ${reservation.userName}`;
+                    let tooltip = `예약자: ${reservation.user_name}`;
                     if (reservation.description) {
                         tooltip += `\n내용: ${reservation.description}`;
                     }
@@ -368,7 +368,7 @@ class ReservationSystem {
             console.error('Reservations is not an array:', reservations);
             return null;
         }
-        return reservations.find(r => r && r.timeSlots && r.timeSlots.includes(slot));
+        return reservations.find(r => r && r.time_slots && r.time_slots.includes(slot));
     }
 
     toggleSlotSelection(slot, element) {
@@ -522,11 +522,11 @@ class ReservationSystem {
                 card.className = 'reservation-card';
                 card.innerHTML = `
                     <div class="reservation-info">
-                        <strong>${reservation.facilityName}</strong><br>
-                        ${reservation.date} ${reservation.timeSlots.join(', ')}<br>
-                        예약자: ${reservation.userName} (${reservation.user})<br>
+                        <strong>${reservation.facility_name}</strong><br>
+                        ${reservation.date} ${reservation.time_slots.join(', ')}<br>
+                        예약자: ${reservation.user_name} (${reservation.username})<br>
                         ${reservation.description ? `<div class="reservation-description">내용: ${reservation.description}</div>` : ''}
-                        <small>예약일: ${new Date(reservation.createdAt).toLocaleDateString()}</small>
+                        <small>예약일: ${new Date(reservation.created_at).toLocaleDateString()}</small>
                     </div>
                     <div class="reservation-actions">
                         <button class="btn-danger" onclick="app.cancelReservation(${reservation.id})">
@@ -560,7 +560,7 @@ class ReservationSystem {
             const listContainer = container.querySelector('#users-list');
 
             users.filter(u => u.role !== 'admin').forEach(user => {
-                const userReservations = reservations.filter(r => r.user === user.username);
+                const userReservations = reservations.filter(r => r.username === user.username);
                 const card = document.createElement('div');
                 card.className = 'reservation-card';
                 card.innerHTML = `
@@ -611,12 +611,12 @@ class ReservationSystem {
                     card.innerHTML = `
                         <div style="display: flex; justify-content: between; align-items: center;">
                             <div>
-                                <strong>${reservation.facilityName}</strong>
+                                <strong>${reservation.facility_name}</strong>
                                 <span class="reservation-status status-upcoming">예정</span><br>
                                 <strong>날짜:</strong> ${reservation.date}<br>
-                                <strong>시간:</strong> ${reservation.timeSlots.join(', ')}<br>
+                                <strong>시간:</strong> ${reservation.time_slots.join(', ')}<br>
                                 ${reservation.description ? `<strong>내용:</strong> ${reservation.description}<br>` : ''}
-                                <small>예약일: ${new Date(reservation.createdAt).toLocaleDateString()}</small>
+                                <small>예약일: ${new Date(reservation.created_at).toLocaleDateString()}</small>
                             </div>
                             <div>
                                 <button class="btn-danger" onclick="app.cancelReservation(${reservation.id})">
@@ -640,12 +640,12 @@ class ReservationSystem {
                     card.className = 'user-reservation-card past';
                     card.innerHTML = `
                         <div>
-                            <strong>${reservation.facilityName}</strong>
+                            <strong>${reservation.facility_name}</strong>
                             <span class="reservation-status status-past">완료</span><br>
                             <strong>날짜:</strong> ${reservation.date}<br>
-                            <strong>시간:</strong> ${reservation.timeSlots.join(', ')}<br>
+                            <strong>시간:</strong> ${reservation.time_slots.join(', ')}<br>
                             ${reservation.description ? `<strong>내용:</strong> ${reservation.description}<br>` : ''}
-                            <small>예약일: ${new Date(reservation.createdAt).toLocaleDateString()}</small>
+                            <small>예약일: ${new Date(reservation.created_at).toLocaleDateString()}</small>
                         </div>
                     `;
                     container.appendChild(card);
