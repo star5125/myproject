@@ -2,8 +2,8 @@
 const { createClient } = require('@supabase/supabase-js');
 const bcrypt = require('bcryptjs');
 
-const supabaseUrl = process.env.SUPABASE_URL || 'your_supabase_project_url';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'your_service_role_key';
+const supabaseUrl = process.env.SUPABASE_URL || 'https://beggqjgxqotthwsvrffu.supabase.co';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlZ2dxamd4cW90dGh3c3ZyZmZ1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzgyMzM0MSwiZXhwIjoyMDczMzk5MzQxfQ.dwQqOZoK7CpBDIbcjjkSf6zuc-GjU5SZ-n95PT0DmWU';
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
